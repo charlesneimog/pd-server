@@ -6,8 +6,8 @@ lib.name = server
 uname := $(shell uname -s)
 
 ifeq (MINGW,$(findstring MINGW,$(uname)))
-  cflags = -O2 -std=c++11 -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -Wno-cast-function-type 
-  ldlibs =  -lwinpthread -lssl -lcrypto
+  cflags = -O2 -Winline  -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -Wno-cast-function-type 
+  ldlibs =  -lssl -lcrypto -lwinpthread -lwsock32 -lws2_32
 
 
 else ifeq (Linux,$(findstring Linux,$(uname)))
