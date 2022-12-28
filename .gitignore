@@ -1,0 +1,8 @@
+*.o
+*.swp
+*.sdf
+*.suo
+*.opensdf
+*.db
+*.pem
+*.pd_linux
