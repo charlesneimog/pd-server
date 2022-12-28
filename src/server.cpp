@@ -1,16 +1,21 @@
 //
 //  sample.cc
 //
-//  Copyright (c) 2019 Yuji Hirose. All rights reserved.
+//  Copyright (c) 2022. Charles K. Neimog
 //  MIT License
 //
+
 #include <chrono>
 #include <cstdio>
-#include "httplib.h"  
+#include "./cpp-httplib/httplib.h" 
 #include <m_pd.h>
 #include <g_canvas.h>
 #include <iostream>
 #include <pthread.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 t_class *server_class;
 using namespace httplib;
