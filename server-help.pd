@@ -1,14 +1,12 @@
 #N canvas 591 262 518 404 12;
-#X obj 19 129 server;
 #X msg 19 32 start;
 #X msg 32 60 port 8080;
 #N canvas 0 50 1459 753 WINDOWS 0;
-#X text 22 14 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem from Mingw64 terminal., f 85;
+#X text 22 14 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem
+-x509 -days 365 -out cert.pem from Mingw64 terminal., f 85;
 #X restore 159 37 pd WINDOWS;
 #N canvas 0 50 1459 753 LINUX 0;
-#X text 22 14 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem from terminal., f 85;
+#X text 22 14 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem
+-x509 -days 365 -out cert.pem from terminal., f 85;
 #X restore 159 63 pd LINUX;
 #X msg 66 91 stop;
-#X connect 1 0 0 0;
-#X connect 2 0 0 0;
-#X connect 5 0 0 0;
