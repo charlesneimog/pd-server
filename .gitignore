@@ -7,4 +7,5 @@
 *.pem
 *.pd_linux
 *.dll
+.vscode
 test.pd
