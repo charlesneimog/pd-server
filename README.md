@@ -11,3 +11,11 @@ Pd-server is a PureData interface to cpp-httplib. This object intends to make on
 ## Linux
 
 * Install openssl `sudo dnf install openssl-devel` or `sudo apt-get install libssl-dev` and run `make`.
+
+## MacOS
+
+* I do not know.
+
+# License
+
+MIT license (© 2022 Yuji Hirose)
