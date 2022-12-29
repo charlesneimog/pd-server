@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Pd Server Object</title>
-</head>
-<body>
-    <h1>Pd Server Object</h1>
-    <p>This is just to check if it is working!</p>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Flute</title>
+    </head>
+    <style>
+        img {
+            height: auto;
+            width: 100%;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        h1 {
+            color: rgb(0, 0, 0);
+            text-align: center;
+            font-size: 50px;
+            font-family: "Euclid Circular B",sans-serif;
+          }
+          .button-h1 {
+            align-items: center;
+            background-color: #d9d9d9;
+            border-radius: 15px;
+            border-width: 30;
+            font-family: "Euclid Circular B",sans-serif;
+            height: 80px;
+            justify-content: center;
+            line-height: 1;
+            list-style: none;
+            overflow: hidden;
+            padding-left: 45px;
+            padding-right: 45px;
+            padding-top: calc(1em - 1px);
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .15s,transform .15s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            font-size: 40px;
+          }
+    </style>
+    <h1 class="button-h1">Example of Pd-server Object</h1>
+    <img src="score.png" alt="">
+    <div style="position: fixed; bottom: 0; left: 0; width: 50%; height: 80px; background-color: black;"></div> <!-- THIS IS MY RECT -->
+    <script src="flute.js"></script>
+    <script src="yin.js"></script>
 </html>

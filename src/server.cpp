@@ -22,6 +22,7 @@ using namespace httplib;
 
 // DEFINE GLOBAL VARIABLE TO SAVE THE SERVER SSLServer
 SSLServer *GLOBAL_SERVER; // Temporary Resolution
+Server *GLOBAL_SERVER_NO_SSL; // Temporary Resolution
 
 // For warning messages when creating more than one server object (seems unstable, mainly on Windows)
 int server_object = 0;
@@ -33,6 +34,7 @@ typedef struct _server { // It seems that all the objects are some kind of class
     t_canvas            *x_canvas; // pointer to the canvas
 	t_int             	port; // port
 	t_int  				running; // running
+	t_int  				ssl; // ssl
 }t_server;
 
 // ========================================================
@@ -87,6 +89,19 @@ static void set_port(t_server *x, t_floatarg f) {
 }
 
 // ========================================================
+static void set_ssl(t_server *x, t_floatarg f) {
+	// convert to int
+	x->ssl = (int)f;
+	if (x->ssl == 1) {
+		post("[server] SSL activated");
+	} else {
+		post("[server] SSL deactivated");
+	}
+	return;
+}
+
+
+// ========================================================
 static std::string get_ip_address(t_server *x) {
 	std::string ip_address;
 	#ifdef _WIN32
@@ -132,7 +147,7 @@ static std::string get_ip_address(t_server *x) {
 }
 
 // ========================================================
-static void server_main(t_server *x) {
+static void server_main_ssl(t_server *x) {
 	std::string public_dir;
 	std::string cert_path;
 	std::string private_key_path;
@@ -192,14 +207,61 @@ static void server_main(t_server *x) {
 }
 
 // ========================================================
+static void server_main(t_server *x) {
+	std::string public_dir;
+	std::string cert_path;
+	std::string private_key_path;
+	t_symbol *canvas = canvas_getdir(x->x_canvas);
+	public_dir = canvas->s_name;
+
+	Server svr;
+	
+	if (!svr.is_valid()) {
+		pd_error(x, "[server] Server could not be started");
+		return;
+	} 
+
+	// save the server in the GLOBAL_SERVER variable
+	GLOBAL_SERVER_NO_SSL = &svr;
+
+	public_dir += "/public";
+	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
+	svr.set_error_handler([](const Request & /*req*/, Response &res) {
+		char buf[BUFSIZ];
+			res.set_content(buf, "text/html");
+	});
+	svr.Get("/", [](const Request & /*req*/, Response &res) {
+			res.set_redirect("/index.html");
+	});
+
+	// Adress to stop the server
+	svr.Get("/stop", [&](const Request & /*req*/, Response &res) {
+		svr.stop();
+		x->running = 0;
+	});
+	
+	std::string ip_address = get_ip_address(x);
+	int port = x->port;
+	post("[server] Server started on http://%s:%d", ip_address.c_str(), port);
+	svr.listen("0.0.0.0", port);
+	post("[server] Server stopped");
+	return;
+}
+
+// ========================================================
 static void *stop_server(t_server *x) {
 	if (x->running == 0) {
 		pd_error(x, "[server] Server not running");
 		return NULL;
 	}
-	
-	SSLServer *svr = GLOBAL_SERVER; // Temporary Resolution
-	svr->stop();
+	if (x->ssl == 1){
+		SSLServer *svr = GLOBAL_SERVER; // Temporary Resolution
+		svr->stop();
+	} else {
+		Server *svr = GLOBAL_SERVER_NO_SSL; // Temporary Resolution
+		svr->stop();
+	}
+
 	x->running = 0;
 	return NULL;
 
@@ -216,7 +278,15 @@ struct thread_arg_struct {
 // ========================================================
 static void *start_server_thread(void *lpParameter) {
 	thread_arg_struct *arg = (thread_arg_struct *)lpParameter;
-	server_main(&arg->x);
+
+	int ssl = arg->x.ssl;
+
+	if (ssl == 1){
+		server_main_ssl(&arg->x);
+	} else {
+		server_main(&arg->x);
+	}
+	
 	free(arg);
 	return NULL;
 }
@@ -258,4 +328,5 @@ void server_setup(void) {
 	class_addmethod(server_class, (t_method)start_server, gensym("start"), A_NULL, 0);
 	class_addmethod(server_class, (t_method)stop_server, gensym("stop"), A_NULL, 0);
 	class_addmethod(server_class, (t_method)set_port, gensym("port"), A_FLOAT, 0);
+	class_addmethod(server_class, (t_method)set_ssl, gensym("ssl"), A_FLOAT, 0);
 }
