@@ -21,7 +21,6 @@ function updateimage() {
     var image = document.getElementsByTagName('img')[0];
     image.src = 'score' + '.png' + '?' + new Date().getTime(); // prevent caching
     updateprogress(8000);
-    setTimeout(updateimage, 200);
 }
 
 // =======================================
