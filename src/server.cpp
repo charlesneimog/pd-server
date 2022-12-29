@@ -24,17 +24,17 @@ using namespace httplib;
 typedef struct _server { // It seems that all the objects are some kind of class.
     t_object            x_obj; // convensao no puredata source code
     t_canvas            *x_canvas; // pointer to the canvas
-    t_inlet             *in1;
-	t_float             *port; // port
-	t_float			 	*https; // https
-	t_float 			*running; // running
+	t_int             	port; // port
+	t_int			 	https; // https
+	t_int  				running; // running
 	t_symbol 			*cert_file;
 	t_symbol 			*private_key_file;
 }t_server;
 
 // ========================================================
 
-void *server_new(void) {
+static void *server_new(t_symbol *s, int ac, t_atom *av) {
+	s = NULL;
 	post("");
 	post("[server] The server is an interface to the httplib library");
 	post("[server] httplib is developed by Yuji Hirose (MIT License)"); 
@@ -47,24 +47,17 @@ void *server_new(void) {
 	std::string public_dir;
 	t_symbol *canvas = canvas_getdir(x->x_canvas);
 	public_dir = canvas->s_name;
-	x->port = (t_float *)malloc(sizeof(t_float));
-	*x->port = 8080;
-	x->running = (t_float *)malloc(sizeof(t_float));
-	*x->running = 0;
-	return (void *)x;
-}
-
-// ========================================================
-static void server_free(t_server *x) {
-	free(x->port);
+	x->port = 8080;
+	x->running = 0;
+	return(x);
 }
 
 // ========================================================
 // ========================================================
 static void set_port(t_server *x, t_floatarg f) {
-	*x->port = f;
-	int port = *x->port;
-	post("[server] Server port set to %d", port);
+	// convert to int
+	x->port = (int)f;
+	post("[server] Port set to %d", x->port);
 	return;
 }
 
@@ -124,7 +117,7 @@ static void server_main(t_server *x) {
 	// Adress to stop the server
 	svr.Get("/stop", [&](const Request & /*req*/, Response &res) {
 		svr.stop();
-		*x->running = 0;
+		x->running = 0;
 	});
 
 
@@ -172,21 +165,30 @@ static void server_main(t_server *x) {
 	#endif
 
 	// ========================================================
-	int port = *x->port;
+	int port = x->port;
 	post("[server] Server started on https://%s:%d", ip_address.c_str(), port);
 	svr.listen("0.0.0.0", port);
 	post("[server] Server stopped");
 	return;
 }
 
+
+
 // ========================================================
 static void *stop_server(t_server *x) {
 	// acess the server and stop it by sending a request to /stop
 	
-	
-	
-	
-	post("[server] Not implemented yet");
+	Client cli("localhost", x->port);
+	auto res = cli.Get("/stop");
+
+	if (res && res->status == 200) {
+		post("[server] Server stopped");
+		x->running = 0;
+		return NULL;
+	} else {
+		pd_error(x, "[server] Server not running");
+		return NULL;
+	}
 	return NULL;
 
 }
@@ -211,7 +213,7 @@ static void *start_server_thread(void *lpParameter) {
 
 // ========================================================
 static void start_server(t_server *x, t_symbol *s, int argc, t_atom *argv) {
-	if (*x->running == 1) {
+	if (x->running == 1) {
 		pd_error(x, "[server] Server already running");
 		return;
 	}
@@ -220,8 +222,7 @@ static void start_server(t_server *x, t_symbol *s, int argc, t_atom *argv) {
 	pthread_t thread;
 	pthread_create(&thread, NULL, start_server_thread, arg);
 	pthread_detach(thread);
-	x->running = (t_float *)malloc(sizeof(t_float));
-	*x->running = 1;
+	x->running = 1;
 	return;
 }
 
@@ -237,7 +238,7 @@ extern "C" {
 
 void server_setup(void) {
 	std::cerr << __FUNCTION__ << std::endl;
-  	server_class = class_new(gensym("server"), server_new, 0, sizeof(t_object), 0, A_NULL);
+  	server_class = class_new(gensym("server"), (t_newmethod)server_new, 0, sizeof(t_object), 0, A_NULL);
   	
 	// METHODS
 	class_addmethod(server_class, (t_method)start_server, gensym("start"), A_GIMME, 0);
