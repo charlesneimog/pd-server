@@ -53,6 +53,12 @@ static void *server_new(t_symbol *s, int ac, t_atom *av) {
 }
 
 // ========================================================
+static void server_free(t_server *x){
+	x = NULL;
+
+}
+
+// ========================================================
 // ========================================================
 static void set_port(t_server *x, t_floatarg f) {
 	// convert to int
@@ -177,22 +183,10 @@ static void server_main(t_server *x) {
 // ========================================================
 static void *stop_server(t_server *x) {
 	// acess the server and stop it by sending a request to /stop
-	
-	Client cli("localhost", x->port);
-	auto res = cli.Get("/stop");
-
-	if (res && res->status == 200) {
-		post("[server] Server stopped");
-		x->running = 0;
-		return NULL;
-	} else {
-		pd_error(x, "[server] Server not running");
-		return NULL;
-	}
-	return NULL;
+	post("[server] Not implemented yet");
+	return;
 
 }
-
 
 // ========================================================
 struct thread_arg_struct {
@@ -238,7 +232,7 @@ extern "C" {
 
 void server_setup(void) {
 	std::cerr << __FUNCTION__ << std::endl;
-  	server_class = class_new(gensym("server"), (t_newmethod)server_new, 0, sizeof(t_object), 0, A_NULL);
+  	server_class = class_new(gensym("server"), (t_newmethod)server_new, (t_method)server_free, sizeof(t_server), 0, A_GIMME, 0);
   	
 	// METHODS
 	class_addmethod(server_class, (t_method)start_server, gensym("start"), A_GIMME, 0);
