@@ -23,6 +23,10 @@ using namespace httplib;
 // DEFINE GLOBAL VARIABLE TO SAVE THE SERVER SSLServer
 SSLServer *GLOBAL_SERVER; // Temporary Resolution
 
+// For warning messages
+int server_object = 0;
+int object_created = 0;
+
 
 
 // ========================================================
@@ -40,26 +44,40 @@ typedef struct _server { // It seems that all the objects are some kind of class
 
 static void *server_new(t_symbol *s, int ac, t_atom *av) {
 	s = NULL;
-	post("");
-	post("[server] The server is an interface to the httplib library");
-	post("[server] httplib is developed by Yuji Hirose (MIT License)"); 
-	post("[server] Check the original code in: https://github.com/yhirose/cpp-httplib/");
-	post("[server] Pd server object developed by Charles K. Neimog (2022)");
-	post("[server] version 0.0.1");
-	post("");
+	if (server_object == 0) {
+		post("");
+		post("[server] The server is an interface to the httplib library");
+		post("[server] httplib is developed by Yuji Hirose (MIT License)"); 
+		post("[server] Check the original code in: https://github.com/yhirose/cpp-httplib/");
+		post("[server] Pd server object developed by Charles K. Neimog (2022)");
+		post("[server] version 0.0.1");
+		post("");
+	}
+
 	t_server *x = (t_server *)pd_new(server_class);
+
+	if (server_object == 1){
+		pd_error(x, "[server] It is not recommended to create more than one server object");
+	}
+	object_created += 1;
 	x->x_canvas = canvas_getcurrent();
 	std::string public_dir;
 	t_symbol *canvas = canvas_getdir(x->x_canvas);
 	public_dir = canvas->s_name;
 	x->port = 8080;
 	x->running = 0;
+	server_object = 1;
 	return(x);
 }
 
 // ========================================================
 static void server_free(t_server *x){
 	x = NULL;
+	object_created -= 1;
+	if (object_created == 0) {
+		server_object = 0;
+	}
+	
 
 }
 
