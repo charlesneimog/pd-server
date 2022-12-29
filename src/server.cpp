@@ -23,48 +23,47 @@ using namespace httplib;
 // DEFINE GLOBAL VARIABLE TO SAVE THE SERVER SSLServer
 SSLServer *GLOBAL_SERVER; // Temporary Resolution
 
-// For warning messages
+// For warning messages when creating more than one server object (seems unstable, mainly on Windows)
 int server_object = 0;
 int object_created = 0;
-
-
 
 // ========================================================
 typedef struct _server { // It seems that all the objects are some kind of class.
     t_object            x_obj; // convensao no puredata source code
     t_canvas            *x_canvas; // pointer to the canvas
 	t_int             	port; // port
-	t_int			 	https; // https
 	t_int  				running; // running
-	t_symbol 			*cert_file;
-	t_symbol 			*private_key_file;
 }t_server;
 
 // ========================================================
 
-static void *server_new(t_symbol *s, int ac, t_atom *av) {
-	s = NULL;
+static void *server_new(t_floatarg f) {
 	if (server_object == 0) {
 		post("");
-		post("[server] The server is an interface to the httplib library");
-		post("[server] httplib is developed by Yuji Hirose (MIT License)"); 
-		post("[server] Check the original code in: https://github.com/yhirose/cpp-httplib/");
-		post("[server] Pd server object developed by Charles K. Neimog (2022)");
-		post("[server] version 0.0.1");
+		post("[server] Server object is an interface to the httplib library by Yuji Hirose");
+		post("[server] The original https://github.com/yhirose/cpp-httplib/");
+		post("[server] The interface for PureData is developed by Charles K. Neimog (2022)");
+		post("[server] version 0.1.0");
+		post("");
+	}
+	t_server *x = (t_server *)pd_new(server_class);
+	if (server_object == 1){
+		post("");
+		pd_error(x, "[server] It is not recommended to create more than one server object");
 		post("");
 	}
 
-	t_server *x = (t_server *)pd_new(server_class);
-
-	if (server_object == 1){
-		pd_error(x, "[server] It is not recommended to create more than one server object");
+	x->port = 8080;
+	if (f != 0) {
+		x->port = (int)f;
+		post("[server] Port set to %d", x->port);
 	}
+
 	object_created += 1;
 	x->x_canvas = canvas_getcurrent();
 	std::string public_dir;
 	t_symbol *canvas = canvas_getdir(x->x_canvas);
 	public_dir = canvas->s_name;
-	x->port = 8080;
 	x->running = 0;
 	server_object = 1;
 	return(x);
@@ -72,16 +71,13 @@ static void *server_new(t_symbol *s, int ac, t_atom *av) {
 
 // ========================================================
 static void server_free(t_server *x){
-	x = NULL;
+	(void)x;
 	object_created -= 1;
 	if (object_created == 0) {
 		server_object = 0;
 	}
-	
-
 }
 
-// ========================================================
 // ========================================================
 static void set_port(t_server *x, t_floatarg f) {
 	// convert to int
@@ -91,8 +87,6 @@ static void set_port(t_server *x, t_floatarg f) {
 }
 
 // ========================================================
-// ========================================================
-// function to return the ip address of the computer
 static std::string get_ip_address(t_server *x) {
 	std::string ip_address;
 	#ifdef _WIN32
@@ -138,8 +132,6 @@ static std::string get_ip_address(t_server *x) {
 }
 
 // ========================================================
-// ========================================================
-
 static void server_main(t_server *x) {
 	std::string public_dir;
 	std::string cert_path;
@@ -159,20 +151,13 @@ static void server_main(t_server *x) {
 		return;
 	}
 	
-
 	const char *cert_path_char = cert_path.c_str();
 	const char *private_key_path_char = private_key_path.c_str();
-
-
+	
 	#define SERVER_CERT_FILE cert_path_char
 	#define SERVER_PRIVATE_KEY_FILE private_key_path_char
 
-	// start server
-	#ifdef CPPHTTPLIB_OPENSSL_SUPPORT
-  		SSLServer svr(SERVER_CERT_FILE, SERVER_PRIVATE_KEY_FILE);
-	#else
-  		Server svr;
-	#endif
+	SSLServer svr(SERVER_CERT_FILE, SERVER_PRIVATE_KEY_FILE);
 	
 	if (!svr.is_valid()) {
 		pd_error(x, "[server] Server could not be started");
@@ -197,8 +182,7 @@ static void server_main(t_server *x) {
 		svr.stop();
 		x->running = 0;
 	});
-	// Adress to get the ip address
-
+	
 	std::string ip_address = get_ip_address(x);
 	int port = x->port;
 	post("[server] Server started on https://%s:%d", ip_address.c_str(), port);
@@ -207,8 +191,6 @@ static void server_main(t_server *x) {
 	return;
 }
 
-
-
 // ========================================================
 static void *stop_server(t_server *x) {
 	if (x->running == 0) {
@@ -216,7 +198,6 @@ static void *stop_server(t_server *x) {
 		return NULL;
 	}
 	
-	// GET GLOBAL_SERVER
 	SSLServer *svr = GLOBAL_SERVER; // Temporary Resolution
 	svr->stop();
 	x->running = 0;
@@ -233,7 +214,6 @@ struct thread_arg_struct {
 } thread_arg;
 
 // ========================================================
-
 static void *start_server_thread(void *lpParameter) {
 	thread_arg_struct *arg = (thread_arg_struct *)lpParameter;
 	server_main(&arg->x);
@@ -242,7 +222,7 @@ static void *start_server_thread(void *lpParameter) {
 }
 
 // ========================================================
-static void start_server(t_server *x, t_symbol *s, int argc, t_atom *argv) {
+static void start_server(t_server *x) {
 	if (x->running == 1) {
 		pd_error(x, "[server] Server already running");
 		return;
@@ -257,7 +237,6 @@ static void start_server(t_server *x, t_symbol *s, int argc, t_atom *argv) {
 }
 
 // ========================================================
-
 #if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
 extern "C" {
 	void server_setup(void);
@@ -265,15 +244,18 @@ extern "C" {
 #endif
 
 // ========================================================
-
 void server_setup(void) {
 	std::cerr << __FUNCTION__ << std::endl;
-  	server_class = class_new(gensym("server"), (t_newmethod)server_new, (t_method)server_free, sizeof(t_server), 0, A_GIMME, 0);
+  	server_class = class_new(gensym("server"), 
+							(t_newmethod)server_new,
+							(t_method)server_free, 
+							sizeof(t_server), 
+							CLASS_DEFAULT, 
+							A_FLOAT, 
+							0);
   	
 	// METHODS
-	class_addmethod(server_class, (t_method)start_server, gensym("start"), A_GIMME, 0);
+	class_addmethod(server_class, (t_method)start_server, gensym("start"), A_NULL, 0);
 	class_addmethod(server_class, (t_method)stop_server, gensym("stop"), A_NULL, 0);
 	class_addmethod(server_class, (t_method)set_port, gensym("port"), A_FLOAT, 0);
 }
-
-// ========================================================

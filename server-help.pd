@@ -7,8 +7,8 @@
 #X text 22 14 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem from terminal., f 85;
 #X restore 159 63 pd LINUX;
 #X msg 66 91 stop;
-#X obj 32 147 server;
 #X msg 32 60 port 8080;
-#X connect 0 0 4 0;
-#X connect 3 0 4 0;
-#X connect 5 0 4 0;
+#X obj 7 154 server 8090;
+#X connect 0 0 5 0;
+#X connect 3 0 5 0;
+#X connect 4 0 5 0;
