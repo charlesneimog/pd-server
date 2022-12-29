@@ -2,6 +2,8 @@
 
 Pd-server is a PureData interface to cpp-httplib. This object intends to make one way to sync live electronic music performances (based on the patches of Cort Lippe). 
 
+<img src="https://github.com/charlesneimog/pd-server/raw/master/resources/Exemplo.gif" width=100% height=100%>
+
 # Build
 ## Windows
 
