@@ -27,6 +27,7 @@ typedef struct _server { // It seems that all the objects are some kind of class
     t_inlet             *in1;
 	t_float             *port; // port
 	t_float			 	*https; // https
+	t_float 			*running; // running
 	t_symbol 			*cert_file;
 	t_symbol 			*private_key_file;
 }t_server;
@@ -48,6 +49,8 @@ void *server_new(void) {
 	public_dir = canvas->s_name;
 	x->port = (t_float *)malloc(sizeof(t_float));
 	*x->port = 8080;
+	x->running = (t_float *)malloc(sizeof(t_float));
+	*x->running = 0;
 	return (void *)x;
 }
 
@@ -112,21 +115,77 @@ static void server_main(t_server *x) {
 		char buf[BUFSIZ];
 			res.set_content(buf, "text/html");
 	});
+
+	// ========================================================
 	svr.Get("/", [](const Request & /*req*/, Response &res) {
 			res.set_redirect("/index.html");
 	});
 
+	// Adress to stop the server
+	svr.Get("/stop", [&](const Request & /*req*/, Response &res) {
+		svr.stop();
+		*x->running = 0;
+	});
+
+
+	// ========================================================
+	// get Ip address
+	std::string ip_address;
+	#ifdef _WIN32
+		char ac[80];
+		if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
+			pd_error(x, "[server] Error in gethostname");
+			return;
+		}
+		struct hostent *phe = gethostbyname(ac);
+		if (phe == 0) {
+			pd_error(x, "[server] Error in gethostbyname");
+			return;
+		}
+		for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
+			struct in_addr addr;
+			memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+			ip_address = inet_ntoa(addr);
+		}
+	#else
+		struct ifaddrs *ifaddr, *ifa;
+		int family, s;
+		char host[NI_MAXHOST];
+		if (getifaddrs(&ifaddr) == -1) {
+			pd_error(x, "[server] Error in getifaddrs");
+			return;
+		}
+		for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+			if (ifa->ifa_addr == NULL)
+				continue;
+			family = ifa->ifa_addr->sa_family;
+			if (family == AF_INET) {
+				s = getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+				if (s != 0) {
+					pd_error(x, "[server] Error in getnameinfo");
+					return;
+				}
+				ip_address = host;
+			}
+		}
+		freeifaddrs(ifaddr);
+	#endif
 
 	// ========================================================
 	int port = *x->port;
-	post("[server] Server started on port %d", port);
-	
+	post("[server] Server started on https://%s:%d", ip_address.c_str(), port);
 	svr.listen("0.0.0.0", port);
+	post("[server] Server stopped");
 	return;
 }
 
 // ========================================================
 static void *stop_server(t_server *x) {
+	// acess the server and stop it by sending a request to /stop
+	
+	
+	
+	
 	post("[server] Not implemented yet");
 	return NULL;
 
@@ -148,15 +207,22 @@ static void *start_server_thread(void *lpParameter) {
 	server_main(&arg->x);
 	free(arg);
 	return NULL;
-
 }
 
 // ========================================================
 static void start_server(t_server *x, t_symbol *s, int argc, t_atom *argv) {
+	if (*x->running == 1) {
+		pd_error(x, "[server] Server already running");
+		return;
+	}
 	struct thread_arg_struct *arg = (struct thread_arg_struct *)malloc(sizeof(struct thread_arg_struct));
     arg->x = *x;
 	pthread_t thread;
 	pthread_create(&thread, NULL, start_server_thread, arg);
+	pthread_detach(thread);
+	x->running = (t_float *)malloc(sizeof(t_float));
+	*x->running = 1;
+	return;
 }
 
 // ========================================================
