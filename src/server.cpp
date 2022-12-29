@@ -184,7 +184,7 @@ static void server_main(t_server *x) {
 static void *stop_server(t_server *x) {
 	// acess the server and stop it by sending a request to /stop
 	post("[server] Not implemented yet");
-	return;
+	return NULL;
 
 }
 
