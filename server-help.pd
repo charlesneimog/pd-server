@@ -8,7 +8,7 @@
 #X restore 159 63 pd LINUX;
 #X msg 66 91 stop;
 #X obj 32 147 server;
-#X msg 32 60 port 8082;
+#X msg 32 60 port 8080;
 #X connect 0 0 4 0;
 #X connect 3 0 4 0;
 #X connect 5 0 4 0;
