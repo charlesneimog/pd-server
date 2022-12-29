@@ -16,7 +16,7 @@ Pd-server is a PureData interface to cpp-httplib. This object intends to make on
 
 ## MacOS
 
-* I do not know.
+* I don't know.
 
 # License
 
