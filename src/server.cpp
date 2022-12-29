@@ -20,6 +20,11 @@
 t_class *server_class;
 using namespace httplib;
 
+// DEFINE GLOBAL VARIABLE TO SAVE THE SERVER SSLServer
+SSLServer *GLOBAL_SERVER; // Temporary Resolution
+
+
+
 // ========================================================
 typedef struct _server { // It seems that all the objects are some kind of class.
     t_object            x_obj; // convensao no puredata source code
@@ -69,6 +74,53 @@ static void set_port(t_server *x, t_floatarg f) {
 
 // ========================================================
 // ========================================================
+// function to return the ip address of the computer
+static std::string get_ip_address(t_server *x) {
+	std::string ip_address;
+	#ifdef _WIN32
+		char ac[80];
+		if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
+			pd_error(x, "[server] Error in gethostname");
+			return NULL;
+		}
+		struct hostent *phe = gethostbyname(ac);
+		if (phe == 0) {
+			pd_error(x, "[server] Error in gethostbyname");
+			return NULL;
+		}
+		for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
+			struct in_addr addr;
+			memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+			ip_address = inet_ntoa(addr);
+		}
+	#else
+		struct ifaddrs *ifaddr, *ifa;
+		int family, s;
+		char host[NI_MAXHOST];
+		if (getifaddrs(&ifaddr) == -1) {
+			pd_error(x, "[server] Error in getifaddrs");
+			return NULL;
+		}
+		for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+			if (ifa->ifa_addr == NULL)
+				continue;
+			family = ifa->ifa_addr->sa_family;
+			if (family == AF_INET) {
+				s = getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+				if (s != 0) {
+					pd_error(x, "[server] Error in getnameinfo");
+					return NULL;
+				}
+				ip_address = host;
+			}
+		}
+		freeifaddrs(ifaddr);
+	#endif
+	return ip_address;
+}
+
+// ========================================================
+// ========================================================
 
 static void server_main(t_server *x) {
 	std::string public_dir;
@@ -93,6 +145,7 @@ static void server_main(t_server *x) {
 	const char *cert_path_char = cert_path.c_str();
 	const char *private_key_path_char = private_key_path.c_str();
 
+
 	#define SERVER_CERT_FILE cert_path_char
 	#define SERVER_PRIVATE_KEY_FILE private_key_path_char
 
@@ -108,14 +161,15 @@ static void server_main(t_server *x) {
 		return;
 	} 
 
+	// save the server in the GLOBAL_SERVER variable
+	GLOBAL_SERVER = &svr;
+
 	public_dir += "/public";
 	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
 	svr.set_error_handler([](const Request & /*req*/, Response &res) {
 		char buf[BUFSIZ];
 			res.set_content(buf, "text/html");
 	});
-
-	// ========================================================
 	svr.Get("/", [](const Request & /*req*/, Response &res) {
 			res.set_redirect("/index.html");
 	});
@@ -125,52 +179,9 @@ static void server_main(t_server *x) {
 		svr.stop();
 		x->running = 0;
 	});
+	// Adress to get the ip address
 
-
-	// ========================================================
-	// get Ip address
-	std::string ip_address;
-	#ifdef _WIN32
-		char ac[80];
-		if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
-			pd_error(x, "[server] Error in gethostname");
-			return;
-		}
-		struct hostent *phe = gethostbyname(ac);
-		if (phe == 0) {
-			pd_error(x, "[server] Error in gethostbyname");
-			return;
-		}
-		for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
-			struct in_addr addr;
-			memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-			ip_address = inet_ntoa(addr);
-		}
-	#else
-		struct ifaddrs *ifaddr, *ifa;
-		int family, s;
-		char host[NI_MAXHOST];
-		if (getifaddrs(&ifaddr) == -1) {
-			pd_error(x, "[server] Error in getifaddrs");
-			return;
-		}
-		for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-			if (ifa->ifa_addr == NULL)
-				continue;
-			family = ifa->ifa_addr->sa_family;
-			if (family == AF_INET) {
-				s = getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
-				if (s != 0) {
-					pd_error(x, "[server] Error in getnameinfo");
-					return;
-				}
-				ip_address = host;
-			}
-		}
-		freeifaddrs(ifaddr);
-	#endif
-
-	// ========================================================
+	std::string ip_address = get_ip_address(x);
 	int port = x->port;
 	post("[server] Server started on https://%s:%d", ip_address.c_str(), port);
 	svr.listen("0.0.0.0", port);
@@ -182,8 +193,15 @@ static void server_main(t_server *x) {
 
 // ========================================================
 static void *stop_server(t_server *x) {
-	// acess the server and stop it by sending a request to /stop
-	post("[server] Not implemented yet");
+	if (x->running == 0) {
+		pd_error(x, "[server] Server not running");
+		return NULL;
+	}
+	
+	// GET GLOBAL_SERVER
+	SSLServer *svr = GLOBAL_SERVER; // Temporary Resolution
+	svr->stop();
+	x->running = 0;
 	return NULL;
 
 }
