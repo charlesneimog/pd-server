@@ -14,16 +14,16 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
   PREFIX = /usr/local
   OPENSSL_DIR = $(PREFIX)/opt/openssl@1.
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib 
-  ZLIB_SUPPORT = -DCPPHTTPLIB_ZLIB_SUPPORT 
-  BROTLI_DIR = $(PREFIX)/opt/brotli
-  CXXFLAGS = -O2 -std=c++11 -I.. -Wall -Wextra -pthread
-  BROTLI_SUPPORT = -DCPPHTTPLIB_BROTLI_SUPPORT -I$(BROTLI_DIR)/include -L$(BROTLI_DIR)/lib 
-  cflags = $(OPENSSL_SUPPORT) $(ZLIB_SUPPORT) $(BROTLI_SUPPORT) $(CXXFLAGS)
-  ldlibs = -lssl -lcrypto -lbrotlicommon -lbrotlienc -lbrotlidec -lz
+  cflags = $(OPENSSL_SUPPORT) $(CXXFLAGS) 
+  ldlibs = -lssl -pthread 
 
 else ifeq (Darwin,$(findstring Darwin,$(uname)))
-  cflags = -Wno-cast-function-type 
-  ldlibs = -lssl -lcrypto -libpthread
+  PREFIX = /usr/local
+  OPENSSL_DIR = $(PREFIX)/opt/openssl@1.
+  OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib 
+  cflags = $(OPENSSL_SUPPORT) $(CXXFLAGS)
+  ldlibs = -lssl -pthread
+
 
 else
   $(error "Unknown system type: $(uname)")
