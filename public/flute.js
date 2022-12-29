@@ -1,7 +1,6 @@
 // =======================================
 // load javascript file
 // =======================================
-
 function updateprogress(duration) {
     var start = new Date().getTime();
     var interval = setInterval(function() {
@@ -20,9 +19,10 @@ function updateprogress(duration) {
 // =======================================
 function updateimage() {
     var image = document.getElementsByTagName('img')[0];
-    image.src = 'score' + '.png' + '?' + new Date().getTime();
-    // read json file inside flute/update_rate.json and get the update rate
+    image.src = 'score' + '.png' + '?' + new Date().getTime(); // prevent caching
     updateprogress(8000);
+    setTimeout(updateimage, 200);
 }
-            
+
+// =======================================
 updateimage();

@@ -43,7 +43,6 @@ static void *server_new(t_floatarg f) {
 	if (server_object == 0) {
 		post("");
 		post("[server] Server object is an interface to the httplib library by Yuji Hirose");
-		post("[server] The original https://github.com/yhirose/cpp-httplib/");
 		post("[server] The interface for PureData is developed by Charles K. Neimog (2022)");
 		post("[server] version 0.1.0");
 		post("");
@@ -99,7 +98,6 @@ static void set_ssl(t_server *x, t_floatarg f) {
 	}
 	return;
 }
-
 
 // ========================================================
 static std::string get_ip_address(t_server *x) {
