@@ -13,16 +13,20 @@
 #include <iostream>
 #include <pthread.h>
 
+// include JSON library
+#include "./json/single_include/nlohmann/json.hpp"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 t_class *server_class;
 using namespace httplib;
+using json = nlohmann::json;
 
 // DEFINE GLOBAL VARIABLE TO SAVE THE SERVER SSLServer
-SSLServer *GLOBAL_SERVER; // Temporary Resolution
-Server *GLOBAL_SERVER_NO_SSL; // Temporary Resolution
+SSLServer *GLOBAL_SERVER_HTTPS; // Temporary Resolution
+Server *GLOBAL_SERVER_HTTP; // Temporary Resolution
 
 // For warning messages when creating more than one server object (seems unstable, mainly on Windows)
 int server_object = 0;
@@ -31,10 +35,13 @@ int object_created = 0;
 // ========================================================
 typedef struct _server { // It seems that all the objects are some kind of class.
     t_object            x_obj; // convensao no puredata source code
+	t_outlet 			*outlet; // outlet
     t_canvas            *x_canvas; // pointer to the canvas
 	t_int             	port; // port
 	t_int  				running; // running
 	t_int  				ssl; // ssl
+	t_int 				debug;
+	t_int 				post;
 }t_server;
 
 // ========================================================
@@ -54,6 +61,7 @@ static void *server_new(t_floatarg f) {
 		post("");
 	}
 
+	x->debug = 0;
 	x->port = 8080;
 	if (f != 0) {
 		x->port = (int)f;
@@ -67,6 +75,7 @@ static void *server_new(t_floatarg f) {
 	public_dir = canvas->s_name;
 	x->running = 0;
 	server_object = 1;
+	x->outlet = outlet_new(&x->x_obj, 0);
 	return(x);
 }
 
@@ -95,6 +104,75 @@ static void set_ssl(t_server *x, t_floatarg f) {
 		post("[server] SSL activated");
 	} else {
 		post("[server] SSL deactivated");
+	}
+	return;
+}
+
+// ========================================================
+static void debug(t_server *x, t_floatarg f) {
+	// convert to int
+	int debug = (int)f;
+	if (debug == 1) {
+		post("[server] Debug activated");
+		x->debug = 1;
+	} else {
+		post("[server] Debug deactivated");
+		x->debug = 0;
+	}
+	return;
+}
+
+// ========================================================
+static void set_post(t_server *x, t_floatarg f) {
+	// convert to int
+	int post_value = (int)f;
+	if (post_value == 1) {
+		post("[server] Post activated");
+		x->post = 1;
+		// create outlet
+
+	} else {
+		post("[server] Post deactivated");
+		x->post = 0;
+	}
+	return;
+}
+
+static void received_message(t_server *x, std::string message) {
+	json j = json::parse(message); // this is from the nlohmann json library
+	// get all keys members of the json object
+	for (json::iterator it = j.begin(); it != j.end(); ++it) {
+		// output the key and the value
+		std::string key = it.key();
+		if (it.value().is_string()) {
+			t_atom a;
+			SETSYMBOL(&a, gensym(it.value().get<std::string>().c_str()));
+			outlet_anything(x->outlet, gensym(key.c_str()), 1, &a);
+		} else if (it.value().is_number()) {
+			int value = it.value();
+			t_atom a;
+			SETFLOAT(&a, value);
+			outlet_anything(x->outlet, gensym(key.c_str()), 1, &a);
+		} else if (it.value().is_array())
+		{
+			json array = it.value();
+			int size = array.size();
+			t_atom a[size];
+			for (int i = 0; i < size; i++) {
+				if (array[i].is_string()) {
+					SETSYMBOL(&a[i], gensym(array[i].get<std::string>().c_str()));
+				} else if (array[i].is_number()) {
+					int value = array[i];
+					SETFLOAT(&a[i], value);
+				} else {
+					pd_error(x, "[server] %s is not a string or a number", key.c_str());
+				}
+			}
+			outlet_anything(x->outlet, gensym(key.c_str()), size, a);
+		}
+		else {
+			pd_error(x, "[server] %s is not a string, number, or list.", key.c_str());
+		}
 	}
 	return;
 }
@@ -145,7 +223,7 @@ static std::string get_ip_address(t_server *x) {
 }
 
 // ========================================================
-static void server_main_ssl(t_server *x) {
+static void server_https(t_server *x) {
 	std::string public_dir;
 	std::string cert_path;
 	std::string private_key_path;
@@ -178,7 +256,7 @@ static void server_main_ssl(t_server *x) {
 	} 
 
 	// save the server in the GLOBAL_SERVER variable
-	GLOBAL_SERVER = &svr;
+	GLOBAL_SERVER_HTTPS = &svr;
 
 	public_dir += "/public";
 	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
@@ -196,6 +274,14 @@ static void server_main_ssl(t_server *x) {
 		x->running = 0;
 	});
 	
+	// get post message from send2pd
+	svr.Post("/send2pd", [&](const Request &req, Response &res) {
+		std::string message = req.body;
+		// message is a json string, we need to parse it
+		received_message(x, message);
+		res.set_content("", "text/plain");
+	});
+
 	std::string ip_address = get_ip_address(x);
 	int port = x->port;
 	post("[server] Server started on https://%s:%d", ip_address.c_str(), port);
@@ -205,7 +291,7 @@ static void server_main_ssl(t_server *x) {
 }
 
 // ========================================================
-static void server_main(t_server *x) {
+static void server_http(t_server *x) {
 	std::string public_dir;
 	std::string cert_path;
 	std::string private_key_path;
@@ -220,7 +306,7 @@ static void server_main(t_server *x) {
 	} 
 
 	// save the server in the GLOBAL_SERVER variable
-	GLOBAL_SERVER_NO_SSL = &svr;
+	GLOBAL_SERVER_HTTP = &svr;
 
 	public_dir += "/public";
 	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
@@ -236,8 +322,17 @@ static void server_main(t_server *x) {
 	svr.Get("/stop", [&](const Request & /*req*/, Response &res) {
 		svr.stop();
 		x->running = 0;
+	});	
+
+	// get post message from send2pd
+	svr.Post("/send2pd", [&](const Request &req, Response &res) {
+		std::string message = req.body;
+		// message is a json string, we need to parse it
+		received_message(x, message);
+		res.set_content("", "text/plain");
 	});
-	
+
+
 	std::string ip_address = get_ip_address(x);
 	int port = x->port;
 	post("[server] Server started on http://%s:%d", ip_address.c_str(), port);
@@ -253,13 +348,12 @@ static void *stop_server(t_server *x) {
 		return NULL;
 	}
 	if (x->ssl == 1){
-		SSLServer *svr = GLOBAL_SERVER; // Temporary Resolution
+		SSLServer *svr = GLOBAL_SERVER_HTTPS; // Temporary Resolution
 		svr->stop();
 	} else {
-		Server *svr = GLOBAL_SERVER_NO_SSL; // Temporary Resolution
+		Server *svr = GLOBAL_SERVER_HTTP; // Temporary Resolution
 		svr->stop();
 	}
-
 	x->running = 0;
 	return NULL;
 
@@ -276,15 +370,12 @@ struct thread_arg_struct {
 // ========================================================
 static void *start_server_thread(void *lpParameter) {
 	thread_arg_struct *arg = (thread_arg_struct *)lpParameter;
-
 	int ssl = arg->x.ssl;
-
 	if (ssl == 1){
-		server_main_ssl(&arg->x);
+		server_https(&arg->x);
 	} else {
-		server_main(&arg->x);
+		server_http(&arg->x);
 	}
-	
 	free(arg);
 	return NULL;
 }
@@ -327,4 +418,6 @@ void server_setup(void) {
 	class_addmethod(server_class, (t_method)stop_server, gensym("stop"), A_NULL, 0);
 	class_addmethod(server_class, (t_method)set_port, gensym("port"), A_FLOAT, 0);
 	class_addmethod(server_class, (t_method)set_ssl, gensym("ssl"), A_FLOAT, 0);
+	class_addmethod(server_class, (t_method)debug, gensym("debug"), A_FLOAT, 0);
+	class_addmethod(server_class, (t_method)set_post, gensym("post"), A_FLOAT, 0);
 }
