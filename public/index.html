@@ -8,7 +8,7 @@
             height: auto;
             width: 100%;
             position: fixed;
-            top: 50%;
+            top: 60%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
@@ -44,7 +44,18 @@
           }
     </style>
     <h1 class="button-h1">Example of Pd-server Object</h1>
+    <button onclick="sendNumber()" style="position: fixed; top: 20; left: 0; width: 25%; height: 80px; background-color: rgba(0, 0, 0, 0.664); color: white; font-size: 40px;">NUMBER</button>
+    <button onclick="sendMessage()" style="position: fixed; top: 20; left: 30%; width: 25%; height: 80px; background-color: rgba(0, 0, 0, 0.664); color: white; font-size: 40px;">MESSAGE</button>
+    <input type="text" id="message" style="position: fixed; top: 35%; left: 35%; width: 15%; height: 40px; background-color: rgba(0, 0, 0, 0.664); color: white; font-size: 20px;">
+    <button onclick="sendList()" style="position: fixed; top: 20; left: 60%; width: 25%; height: 80px; background-color: rgba(0, 0, 0, 0.664); color: white; font-size: 40px;">LIST</button>
+
+    
+
     <img src="score.png" alt="">
-    <div style="position: fixed; bottom: 0; left: 0; width: 50%; height: 80px; background-color: black;"></div> <!-- THIS IS MY RECT -->
+    <div id="ScoreTime" style="position: fixed; bottom: 0; left: 0; width: 50%; height: 80px; background-color: black;"></div> <!-- THIS IS MY RECT -->
     <script src="simple_example.js"></script>
+
+    
+
+
 </html>
