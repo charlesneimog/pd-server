@@ -60,6 +60,48 @@ function sendList() {
 }
 
 // =======================================
+// static void *send2browser(t_server *x, t_symbol *s, int argc, t_atom *argv) {
+// 	if (x->running == 0) {
+// 		pd_error(x, "[server] Server not running");
+// 		return NULL;
+// 	}
+// 	std::string function_name = s->s_name;
+// 	std::string message = function_name + "(";
+// 	for (int i = 0; i < argc; i++) {
+// 		if (argv[i].a_type == A_FLOAT) {
+// 			message += std::to_string(atom_getfloat(&argv[i]));
+// 		} else if (argv[i].a_type == A_SYMBOL) {
+// 			message += atom_getsymbol(&argv[i])->s_name;
+// 		}
+// 		if (i < argc - 1) {
+// 			message += ",";
+// 		}
+// 	}
+// 	message += ");";
+// 	if (x->ssl == 1){
+// 		SSLServer *svr = GLOBAL_SERVER_HTTPS; // Temporary Resolution
+// 		svr->broadcast(message.c_str());
+// 	} else {
+// 		Server *svr = GLOBAL_SERVER_HTTP; // Temporary Resolution
+// 		svr->broadcast(message.c_str());
+// 	}
+// 	return NULL;
+// }
+
+// receive request from pd
+function receivefrompd() {
+    var xhr = new XMLHttpRequest();
+    var host = window.location.hostname;
+    var port = window.location.port;
+    var protocol = window.location.protocol;
+    var url = protocol + '//' + host + ':' + port + '/receivefrompd'; // WARNING: This is an standard, all the requests must be sent to this url
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({ 'receive': 'receive'}));
+}
+
+
+// =======================================
 // TODO: implement websocket
 
 // function startWebsocket() {
