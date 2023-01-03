@@ -357,8 +357,14 @@ static void *stop_server(t_server *x) {
 	}
 	x->running = 0;
 	return NULL;
-
 }
+
+// ========================================================
+// make a Push Request. 
+
+
+
+
 
 // ========================================================
 struct thread_arg_struct {
