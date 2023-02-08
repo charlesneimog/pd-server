@@ -21,9 +21,6 @@ jobs:
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
   
-    # - name: Compatibility
-    #   run: export SYSTEM_VERSION_COMPAT=1
-
     - name: Install ssl
       run: brew install openssl
 
