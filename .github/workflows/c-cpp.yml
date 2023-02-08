@@ -21,9 +21,7 @@ jobs:
 
     # run install.packages('PKI',,'http://www.rforge.net/')
     - name: Install dependencies
-    - run: brew install openssl gettext
-
-
+      run: brew install openssl gettext
 
 
     - name: Clone PureData
