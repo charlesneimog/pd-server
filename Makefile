@@ -19,10 +19,10 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
 
 else ifeq (Darwin,$(findstring Darwin,$(uname)))
   PREFIX = /usr/local
-  OPENSSL_DIR = $(PREFIX)/opt/openssl@1.
+  OPENSSL_DIR = $(PREFIX)/opt/openssl@1. 
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib 
   cflags = $(OPENSSL_SUPPORT) $(CXXFLAGS) 
-  ldlibs = -lssl -pthread
+  ldlibs = -lssl -pthread -libssl
 
 
 else
