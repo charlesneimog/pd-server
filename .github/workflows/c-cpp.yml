@@ -17,10 +17,6 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    
-    # go to the directory where the project is located [project called pd-server]
-    - name: Go to project directory
-      run: cd pd-server
 
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
