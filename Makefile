@@ -33,7 +33,7 @@ endif
 
 # =================================== Sources ===================================
 
-server.class.sources = src/server.cpp
+server.class.sources = src/server.cc
 
 # =================================== Data ======================================
 datafiles = 
