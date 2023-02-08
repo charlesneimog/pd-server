@@ -22,8 +22,8 @@ else ifeq (Darwin,$(findstring Darwin,$(uname)))
   PREFIX = /usr/local
   OPENSSL_DIR = $(PREFIX)/opt/openssl@1.1
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include
-  cflags = -mmacosx-version-min=10.9  -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra  -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -L/usr/local/opt/openssl@1.1/lib -DCPPHTTPLIB_ZLIB_SUPPORT -DCPPHTTPLIB_BROTLI_SUPPORT -I/usr/local/opt/brotli/include -L/usr/local/opt/brotli/lib 
-  ldlibs = -lssl -pthread -libssl -lbrotlicommon -lbrotlienc -lbrotlidec -pthread
+  cflags = -mmacosx-version-min=10.9  -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra  -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -DCPPHTTPLIB_ZLIB_SUPPORT 
+  ldlibs = -pthread -libssl -pthread
 
 else
   $(error "Unknown system type: $(uname)")
