@@ -23,7 +23,7 @@ jobs:
 
 
     - name: FIND libssl.dylib
-      run: which libssl.dylib
+      run: cd /usr/lib && ls
 
 
     # - name: copy libssl to test
