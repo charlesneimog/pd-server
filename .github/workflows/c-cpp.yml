@@ -22,8 +22,15 @@ jobs:
       run: git clone https://github.com/puredata/pure-data.git
     
     - name: Install dependencies
+      ## check if openssl is installed
+      run: brew list
+      ## if not, install it
+
+
       run: brew install openssl@1.1
 
     - name: Build
-      run: c++ -DPD -I "./pure-data/src/" -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1./include -L/usr/local/opt/openssl@1./lib -o src/server.o -c src/server.cpp
+      run: g++ -DPD -I "./pure-data/src/" -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1./include -L/usr/local/opt/openssl@1./lib -o src/server.o -c src/server.cpp
+      
+      
 
