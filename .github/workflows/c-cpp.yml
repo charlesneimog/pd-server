@@ -27,6 +27,9 @@ jobs:
     - name: Install ssl
       run: brew install openssl
 
+    - name: Export lib path
+      run: export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+
 
     - name: Build Pd
       run: make PDINCLUDEDIR=pure-data/src
