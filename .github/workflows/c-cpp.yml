@@ -18,11 +18,17 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
+    - name: Install gcc and libc++ for macOS
+      run: brew install gcc@10
+      
+    
     - name: Check macOS version
       run: |
         sw_vers
         echo "macOS version: ${{ runner.os }}"
         
+
+
 
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
