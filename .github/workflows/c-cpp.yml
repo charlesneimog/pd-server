@@ -20,12 +20,12 @@ jobs:
 
 
     # run install.packages('PKI',,'http://www.rforge.net/')
-    - name: Install dependencies
-      run: brew install openssl gettext
+    # - name: Install dependencies
+    #   run: brew install openssl gettext
 
 
     - name: Where is openssl installed?
-      run: ls /usr/local/opt/openssl@1./include
+      run: ls /usr/local/opt/
 
 
 
