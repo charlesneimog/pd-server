@@ -5,7 +5,15 @@
 //  MIT License
 //
 
+// if Windows or Linux include chrono
+#if defined(_WIN32) || defined(__linux__)
 #include <chrono>
+#endif
+
+#if defined(__APPLE__)
+#include <mach/mach_time.h>
+#endif
+
 #include <cstdio>
 #include "./cpp-httplib/httplib.h" 
 #include <m_pd.h>

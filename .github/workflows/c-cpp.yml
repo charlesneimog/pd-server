@@ -1,11 +1,12 @@
 name: C/C++ CI
 
 on:
+  # just compile when a 'new version' commit is pushed to master
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+  
 
 jobs:
   macos-universal-build:
