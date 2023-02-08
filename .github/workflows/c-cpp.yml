@@ -26,7 +26,7 @@ jobs:
 
 
     - name: Build
-      run: clang++ -DPD -I "pure-data/src" -DUNIX -DMACOSX -I /sw/include  -fcheck-new -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -O2 -stdlib=libc++ -I.. -Wall -Wextra  -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -L/usr/local/opt/openssl@1.1/lib -DCPPHTTPLIB_ZLIB_SUPPORT -DCPPHTTPLIB_BROTLI_SUPPORT -I/usr/local/opt/brotli/include -L/usr/local/opt/brotli/lib  -Wall -Wextra -Wshadow -Winline -Wstrict-aliasing -O3 -ffast-math -funroll-loops -fomit-frame-pointer -o src/server.o -c src/server.cc
+      run: clang++ -DPD -I "pure-data/src" -std=c++11 -DUNIX -DMACOSX -I /sw/include  -fcheck-new -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -O2 -stdlib=libc++ -I.. -Wall -Wextra  -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -L/usr/local/opt/openssl@1.1/lib -DCPPHTTPLIB_ZLIB_SUPPORT -DCPPHTTPLIB_BROTLI_SUPPORT -I/usr/local/opt/brotli/include -L/usr/local/opt/brotli/lib  -Wall -Wextra -Wshadow -Winline -Wstrict-aliasing -O3 -ffast-math -funroll-loops -fomit-frame-pointer -o src/server.o -c src/server.cc
       
       
 
