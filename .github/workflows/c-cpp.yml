@@ -17,12 +17,24 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: macos
+    
+    # go to the directory where the project is located [project called pd-server]
+    - name: Go to project directory
+      run: cd pd-server
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build        
+    - name: Clone PureData
+      run: git clone https://github.com/puredata/pure-data.git
+    
+    - name: Install dependencies
+      run: brew install openssl@1.1
+
+
+    # make PDINCLUDEDIR=/home/neimog/Documents/Git/pd-includes/
+    - name: Build
+      run: make PDINCLUDEDIR=./pure-data/src/
+
+
+
+      
 
 
