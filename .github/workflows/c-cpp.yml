@@ -21,17 +21,10 @@ jobs:
     # - name: Install PureData and Dependencies
     #   run: brew install --cask pd && brew unlink openssl && brew link openssl --force && export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
 
-    - name: Install openssl
-      run: brew install openssl@3
 
     - name: Find where openssl is installed
-      run: brew list openssl@3
+      run: brew list openssl
 
-
-
-
-    # - name: copy libssl to test
-    #   run: cp /usr/local/Cellar/openssl/1.0.2p/lib/libssl.dylib test/libssl.dylib
 
     # - name: Build server Object
     #   run: make 
