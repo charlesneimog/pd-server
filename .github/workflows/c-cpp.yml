@@ -18,8 +18,8 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    - name: Clone PureData
-      run: git clone https://github.com/puredata/pure-data.git
+    - name: Install PureData
+      run: brew install --cask pd
   
     - name: Install ssl
       run: brew install openssl
