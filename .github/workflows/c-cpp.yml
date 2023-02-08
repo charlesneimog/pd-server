@@ -29,7 +29,7 @@ jobs:
 
 
     - name: Build Pd
-      run: make PDINCLUDEDIR=pure-data/src
+      run: make 
 
     - name: Upload Object
       uses: actions/upload-artifact@v2
