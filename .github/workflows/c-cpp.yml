@@ -18,26 +18,11 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-
-    # run install.packages('PKI',,'http://www.rforge.net/')
-    # - name: Install dependencies
-    #   run: brew install openssl gettext
-
-
-    - name: Where is openssl installed?
-      run: ls /usr/local/opt/
-
-
-
-
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
-    
-
-
-
+  
     - name: Build
-      run: g++ -DPD -I "./pure-data/src/" -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -L/usr/local/opt/openssl@1.1/lib -o src/server.o -c src/server.cpp
+      run: make PDINCLUDEDIR=pure-data/src 
       
       
 
