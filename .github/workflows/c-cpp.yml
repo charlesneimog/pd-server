@@ -21,6 +21,10 @@ jobs:
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
   
+    - name: Compatibility
+      run: export SYSTEM_VERSION_COMPAT=1
+
+
     - name: Build
       run: make PDINCLUDEDIR=pure-data/src 
       
