@@ -18,6 +18,8 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
   ldlibs = -lssl -pthread 
 
 else ifeq (Darwin,$(findstring Darwin,$(uname)))
+  # compile with clang++
+  CXX = clang++
   PREFIX = /usr/local
   OPENSSL_DIR = $(PREFIX)/opt/openssl@1.1
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include
