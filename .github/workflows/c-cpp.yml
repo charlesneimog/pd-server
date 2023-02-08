@@ -36,4 +36,10 @@ jobs:
       with:
         name: server
         path: server.pd_darwin 
+        
+    - name: Move server.pd_darwin to test
+      run: mv server.pd_darwin test/server.pd_darwin
+
+    - name: Run Test
+      run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
