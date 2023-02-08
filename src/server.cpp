@@ -7,6 +7,8 @@
 
 #include <chrono>
 #include <cstdio>
+#include <stdlib.h>
+
 #include "./cpp-httplib/httplib.h" 
 #include <m_pd.h>
 #include <g_canvas.h>
