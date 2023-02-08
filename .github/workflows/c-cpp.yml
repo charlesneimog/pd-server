@@ -21,8 +21,7 @@ jobs:
     - name: Clone PureData
       run: git clone https://github.com/puredata/pure-data.git
     
-    - name: Install dependencies
-      ## check if openssl is installed
+
 
 
     - name: Build
