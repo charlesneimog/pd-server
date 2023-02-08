@@ -8,13 +8,15 @@
 // if Windows or Linux include chrono
 #if defined(_WIN32) || defined(__linux__)
 #include <chrono>
+#include <cstdio>
 #endif
 
 #if defined(__APPLE__)
+// add cstdio for Mac	
 #include <mach/mach_time.h>
 #endif
 
-#include <cstdio>
+
 #include "./cpp-httplib/httplib.h" 
 #include <m_pd.h>
 #include <g_canvas.h>
