@@ -30,3 +30,10 @@ jobs:
 
     - name: Build Pd
       run: make PDINCLUDEDIR=pure-data/src
+
+    - name: Upload Object
+      uses: actions/upload-artifact@v2
+      with:
+        name: server
+        path: server.pd_darwin 
+    
