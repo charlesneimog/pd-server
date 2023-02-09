@@ -74,7 +74,7 @@ jobs:
     #   run: mv server.dll server.m_amd64
 
     - name: copy dlls to server_WIN64
-      run: cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
+      run: cp C:\msys64\mingw64\usr\bin\libcrypto-1_1-x64.dll server_WIN64\
 
     # - name: Move files to server_WIN64
     #   run: |
