@@ -123,6 +123,9 @@ jobs:
     - name: Zip server_Linux
       run: zip -r server_Linux.zip server_Linux
 
+    - name: Move test.pd to server_Linux
+      run: cp test/test.pd server_Linux/test.pd
+
     - name: Upload Object
       uses: actions/upload-artifact@v3
       with:
