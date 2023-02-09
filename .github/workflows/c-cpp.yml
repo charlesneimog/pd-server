@@ -58,11 +58,9 @@ jobs:
           install: make mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ # autoconf automake libtool mingw-w64-x86_64-gcc libtool mingw-w64-x86_64-libwinpthread-git mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ 
           update: false
 
-    - name: msys2
-      run: cd C:\msys64\ && ls 
 
-    # - name: Create server_WIN64
-    #   run: mkdir server_WIN64
+    - name: Create server_WIN64
+      run: mkdir server_WIN64
     
     # - name: Install PureData
     #   run: choco install puredata --yes
@@ -75,13 +73,13 @@ jobs:
     # - name: Rename server.dll to server.m_amd64
     #   run: mv server.dll server.m_amd64
 
-    # - name: copy dlls to server_WIN64
-    #   run: cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
+    - name: copy dlls to server_WIN64
+      run: cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
 
     # - name: Move files to server_WIN64
     #   run: |
-    #       cp ${{ runner.temp }}\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
-    #       cp ${{ runner.temp }}\msys64\mingw64\bin\libssl-1_1-x64.dll server_WIN64\
+    #       cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
+    #       cp C:\msys64\mingw64\bin\libssl-1_1-x64.dll server_WIN64\
     #       cp server.m_amd64 server_WIN64\
     #       cp server-help.pd server_WIN64\ 
         
