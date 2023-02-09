@@ -73,6 +73,10 @@ jobs:
     # - name: Rename server.dll to server.m_amd64
     #   run: mv server.dll server.m_amd64
 
+    - name: Find where libcrypto-1_1-x64.dll is
+      run: where libcrypto-1_1-x64.dll
+
+
     - name: copy dlls to server_WIN64
       run: cp C:\msys64\mingw64\usr\bin\libcrypto-1_1-x64.dll server_WIN64\
 
