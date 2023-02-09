@@ -1,97 +1,133 @@
-# name: C/C++ CI
+name: C/C++ CI
 
-# on:
-#   # just compile when a 'new version' commit is pushed to master
-#   push:
-#     branches: [ "master" ]
-#   pull_request:
-#     branches: [ "master" ]
+on:
+  # just compile when a 'new version' commit is pushed to master
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
   
 
-# jobs:
-#   macos-universal-build:
-#     runs-on: macos-latest
+jobs:
+  macos-universal-build:
+    runs-on: macos-latest
 
-#     steps:
-#     - uses: actions/checkout@v3
-#       with:
-#         submodules: recursive
-#         fetch-depth: 0
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
-#     - name: Install PureData 
-#       run: brew install --cask pd 
+    - name: Install PureData 
+      run: brew install --cask pd 
 
 
-#     - name: Build server Object
-#       run: make 
+    - name: Build server Object
+      run: make 
 
-#     - name: Upload Object
-#       uses: actions/upload-artifact@v2
-#       with:
-#         name: server
-#         path: server.pd_darwin 
+    - name: Upload Object
+      uses: actions/upload-artifact@v2
+      with:
+        name: server
+        path: server.pd_darwin 
 
         
-#     - name: Move server.pd_darwin to test
-#       run: mv server.pd_darwin test/server.pd_darwin
+    - name: Move server.pd_darwin to test
+      run: mv server.pd_darwin test/server.pd_darwin
 
-#     - name: Run Test
-#       run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
+    - name: Run Test
+      run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
-#   windows-build:
-#     runs-on: windows-latest
-#     steps:
-#     - uses: actions/checkout@v3
-#       with:
-#         submodules: recursive
-#         fetch-depth: 0
+  windows-build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
 
-#     - if: runner.os == 'Windows'
-#       name: "Install mingw deps"
-#       uses: msys2/setup-msys2@v2
-#       with:
-#           install: make autoconf automake libtool mingw-w64-x86_64-gcc libtool mingw-w64-x86_64-libwinpthread-git mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ 
-#           update: false
+    - if: runner.os == 'Windows'
+      name: "Install mingw deps"
+      uses: msys2/setup-msys2@v2
+      with:
+          install: make autoconf automake libtool mingw-w64-x86_64-gcc libtool mingw-w64-x86_64-libwinpthread-git mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ 
+          update: false
 
-#     - name: Create server_WIN64
-#       run: mkdir server_WIN64
+    - name: Create server_WIN64
+      run: mkdir server_WIN64
     
-#     - name: Install PureData
-#       run: choco install puredata --yes
+    - name: Install PureData
+      run: choco install puredata --yes
 
-#     - if: runner.os == 'Windows'
-#       name: Build py4pd
-#       shell: msys2 {0}
-#       run: make 
+    - if: runner.os == 'Windows'
+      name: Build server
+      shell: msys2 {0}
+      run: make 
     
-#     - name: Rename py4pd.dll to py4pd.m_amd64
-#       run: mv server.dll server.m_amd64
+    - name: Rename server.dll to server.m_amd64
+      run: mv server.dll server.m_amd64
 
-#     - name: Copy necessary DLLs
-#       run: xcopy /s 
-
-
-#     - name: Move files to py4pd_WIN64
-#       run: |
-#           cp py4pd.m_amd64 py4pd_WIN64\
-#           cp py4pd.cfg py4pd_WIN64\
-#           cp py.py py4pd_WIN64\ 
-#           cp python311._pth py4pd_WIN64\ 
-#           cp py4pd-help.pd py4pd_WIN64\ 
-#           cp C:\hostedtoolcache\windows\Python\3.11.1\x64\python311.dll py4pd_WIN64\
+    - name: Move files to server_WIN64
+      run: |
+          cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
+          cp C:\msys64\mingw64\bin\libssl-1_1-x64.dll server_WIN64\
+          cp server.m_amd64 server_WIN64\
+          cp server-help.pd server_WIN64\ 
         
-#     - name: zip py4pd_WIN64
-#       run: 7z a py4pd_WIN64.zip py4pd_WIN64
+    - name: zip server_WIN64
+      run: 7z a server_WIN64.zip server_WIN64
 
-#     - name: Move test.pd to py4pd_WIN64
-#       run: cp test/test.pd py4pd_WIN64/test.pd
+    - name: Move test.pd to server_WIN64
+      run: cp test/test.pd server_WIN64/test.pd
 
-#     - name: Run Test
-#       run: cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui py4pd_WIN64\test.pd
+    - name: Run Test
+      run: cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui server_WIN64\test.pd
 
-#     - name: Upload Object ZIP
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: py4pd_WIN64
-#         path: py4pd_WIN64.zip
+    - name: Upload Object ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: server_WIN64
+        path: server_WIN64.zip
+
+        # # ===============================================================================================
+# # ===============================================================================================
+# # ===============================================================================================
+
+# build for Linux
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Install PureData
+      run: sudo apt-get install puredata -y
+    
+    - name: Install ssl-dev
+      run: sudo apt-get install libssl-dev -y
+
+    - name: Build
+      run: make 
+
+    - name: Create server_Linux
+      run: mkdir server_Linux
+
+    - name: Copy files to server_Linux
+      run: |
+          cp server.pd_linux server_Linux\
+          cp server-help.pd server_Linux\
+
+    - name: Zip server_Linux
+      run: zip -r server_Linux.zip server_Linux
+
+    - name: Upload Object
+      uses: actions/upload-artifact@v3
+      with:
+        name: server_Linux
+        path: server_Linux.zip
+
+    - name: Run Test
+      run: pd -nogui server_Linux/test.pd
