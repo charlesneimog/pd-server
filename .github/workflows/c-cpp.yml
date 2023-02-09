@@ -124,7 +124,7 @@ jobs:
 
     - name: Copy files to server_Linux
       run: |
-          cp server.pd_linux server-help.pd src/server.cc server_Linux\ 
+          cp server.pd_linux server-help.pd src/server.cc server_Linux
          
     - name: Zip server_Linux
       run: zip -r server_Linux.zip server_Linux
