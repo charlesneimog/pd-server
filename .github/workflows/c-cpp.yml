@@ -38,6 +38,10 @@ jobs:
   #   - name: Run Test
   #     run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
+# # ===============================================================================================
+# # ===============================================================================================
+# # ===============================================================================================
+
   # windows-build:
   #   runs-on: windows-latest
   #   steps:
@@ -67,6 +71,9 @@ jobs:
     
   #   - name: Rename server.dll to server.m_amd64
   #     run: mv server.dll server.m_amd64
+
+  #   - name: copy dlls to server_WIN64
+  #     run: cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
 
   #   - name: Move files to server_WIN64
   #     run: |
@@ -117,9 +124,8 @@ jobs:
 
     - name: Copy files to server_Linux
       run: |
-          cp server.pd_linux server_Linux\ 
-          cp server-help.pd server_Linux\
-
+          cp server.pd_linux server-help.pd src/server.cc server_Linux\ 
+         
     - name: Zip server_Linux
       run: zip -r server_Linux.zip server_Linux
 
