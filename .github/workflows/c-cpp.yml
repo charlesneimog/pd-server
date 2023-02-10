@@ -76,8 +76,8 @@ jobs:
     - name: Find External Dependencies
       shell: msys2 {0}
       run: |
-          where libcrypto-1_1-x64.dll > libcrypto.txt
-          where libssl-1_1-x64.dll > libssl.txt
+          where libcrypto-3-x64.dll > libcrypto.txt
+          where libssl-3-x64.dll > libssl.txt
           cp $(cat libcrypto.txt) server_WIN64
           cp $(cat libssl.txt) server_WIN64
     
