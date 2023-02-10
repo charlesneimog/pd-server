@@ -73,7 +73,14 @@ jobs:
     # - name: Rename server.dll to server.m_amd64
     #   run: mv server.dll server.m_amd64
 
-
+    - name: Find External Dependencies
+      shell: msys2 {0}
+      run: |
+          where libcrypto-1_1-x64.dll > libcrypto.txt
+          where libssl-1_1-x64.dll > libssl.txt
+          cp $(cat libcrypto.txt) server_WIN64
+          cp $(cat libssl.txt) server_WIN64
+    
     - name: where libcrypto-1_1-x64.dll was installed 
       shell: msys2 {0}
       run: where libcrypto-1_1-x64.dll
