@@ -55,7 +55,7 @@ jobs:
       name: "Install mingw deps"
       uses: msys2/setup-msys2@v2
       with:
-          install: make mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ # autoconf automake libtool mingw-w64-x86_64-gcc libtool mingw-w64-x86_64-libwinpthread-git mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ 
+          install: make mingw-w64-x86_64-openssl mingw-w64-x86_64-crypto++ autoconf automake libtool mingw-w64-x86_64-gcc libtool mingw-w64-x86_64-libwinpthread-git  
           update: false
 
 
