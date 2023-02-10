@@ -4,7 +4,10 @@ import os
 import sys
 
 def find_file(name, path):
+    index_of_last_loop = 0
     for root, dirs, files in os.walk(path):
+        index_of_last_loop += 1
+        print('index_of_last_loop: ', index_of_last_loop)
         if name in files:
             return os.path.join(root, name)
         
