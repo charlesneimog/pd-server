@@ -9,34 +9,34 @@ on:
   
 
 jobs:
-  # macos-universal-build:
-  #   runs-on: macos-latest
+  macos-universal-build:
+    runs-on: macos-latest
 
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #     with:
-  #       submodules: recursive
-  #       fetch-depth: 0
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
-  #   - name: Install PureData 
-  #     run: brew install --cask pd 
+    - name: Install PureData 
+      run: brew install --cask pd 
 
 
-  #   - name: Build server Object
-  #     run: make 
+    - name: Build server Object
+      run: make 
 
-  #   - name: Upload Object
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: server
-  #       path: server.pd_darwin 
+    - name: Upload Object
+      uses: actions/upload-artifact@v2
+      with:
+        name: server
+        path: server.pd_darwin 
 
         
-  #   - name: Move server.pd_darwin to test
-  #     run: mv server.pd_darwin test/server.pd_darwin
+    - name: Move server.pd_darwin to test
+      run: mv server.pd_darwin test/server.pd_darwin
 
-  #   - name: Run Test
-  #     run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
+    - name: Run Test
+      run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
 # # ===============================================================================================
 # # ===============================================================================================
@@ -85,6 +85,10 @@ jobs:
       run: |
           cp server.m_amd64 server_WIN64\
           cp server-help.pd server_WIN64\ 
+          cp src/server.cc server_WIN64\
+
+    - name: Copy Public Folder to server_WIN64
+      run: cp -r public server_WIN64\public
         
     - name: zip server_WIN64
       run: 7z a server_WIN64.zip server_WIN64
@@ -105,42 +109,42 @@ jobs:
 # # ===============================================================================================
 # # ===============================================================================================
 
-# # build for Linux
-#   linux-build:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v3
-#       with:
-#         submodules: recursive
-#         fetch-depth: 0
+# build for Linux
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
-#     - name: Install PureData
-#       run: sudo apt-get install puredata -y
+    - name: Install PureData
+      run: sudo apt-get install puredata -y
     
-#     - name: Install ssl-dev
-#       run: sudo apt-get install libssl-dev -y
+    - name: Install ssl-dev
+      run: sudo apt-get install libssl-dev -y
 
-#     - name: Build
-#       run: make 
+    - name: Build
+      run: make 
 
-#     - name: Create server_Linux
-#       run: mkdir server_Linux
+    - name: Create server_Linux
+      run: mkdir server_Linux
 
-#     - name: Copy files to server_Linux
-#       run: |
-#           cp server.pd_linux server-help.pd src/server.cc server_Linux
+    - name: Copy files to server_Linux
+      run: |
+          cp server.pd_linux server-help.pd src/server.cc server_Linux
          
-#     - name: Zip server_Linux
-#       run: zip -r server_Linux.zip server_Linux
+    - name: Zip server_Linux
+      run: zip -r server_Linux.zip server_Linux
 
-#     - name: Move test.pd to server_Linux
-#       run: cp test/test.pd server_Linux/test.pd
+    - name: Move test.pd to server_Linux
+      run: cp test/test.pd server_Linux/test.pd
 
-#     - name: Upload Object
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: server_Linux
-#         path: server_Linux.zip
+    - name: Upload Object
+      uses: actions/upload-artifact@v3
+      with:
+        name: server_Linux
+        path: server_Linux.zip
 
-#     - name: Run Test
-#       run: pd -nogui server_Linux/test.pd
+    - name: Run Test
+      run: pd -nogui server_Linux/test.pd
