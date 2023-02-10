@@ -74,8 +74,9 @@ jobs:
     #   run: mv server.dll server.m_amd64
 
 
-    - name: look for libcrypto-1_1-x64.dll inside C:\msys64\ recursively
-      run: python py.py
+    - name: where libcrypto-1_1-x64.dll was installed 
+      shell: msys2 {0}
+      run: where libcrypto-1_1-x64.dll
 
     # - name: Move files to server_WIN64
     #   run: |
