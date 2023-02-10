@@ -75,7 +75,7 @@ jobs:
 
 
     - name: look for libcrypto-1_1-x64.dll inside C:\msys64\ recursively
-      run: findstr /s /m /i "libcrypto-1_1-x64.dll" C:\msys64\
+      run: python py.py
 
     # - name: Move files to server_WIN64
     #   run: |
