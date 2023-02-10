@@ -62,16 +62,16 @@ jobs:
     - name: Create server_WIN64
       run: mkdir server_WIN64
     
-    # - name: Install PureData
-    #   run: choco install puredata --yes
+    - name: Install PureData
+      run: choco install puredata --yes
 
-    # - if: runner.os == 'Windows'
-    #   name: Build server
-    #   shell: msys2 {0}
-    #   run: make 
+    - if: runner.os == 'Windows'
+      name: Build server
+      shell: msys2 {0}
+      run: make 
     
-    # - name: Rename server.dll to server.m_amd64
-    #   run: mv server.dll server.m_amd64
+    - name: Rename server.dll to server.m_amd64
+      run: mv server.dll server.m_amd64
 
     - name: Find External Dependencies
       shell: msys2 {0}
@@ -81,31 +81,25 @@ jobs:
           cp $(cat libcrypto.txt) server_WIN64
           cp $(cat libssl.txt) server_WIN64
     
-    - name: where libcrypto-1_1-x64.dll was installed 
-      shell: msys2 {0}
-      run: where libcrypto-1_1-x64.dll
-
-    # - name: Move files to server_WIN64
-    #   run: |
-    #       cp C:\msys64\mingw64\bin\libcrypto-1_1-x64.dll server_WIN64\
-    #       cp C:\msys64\mingw64\bin\libssl-1_1-x64.dll server_WIN64\
-    #       cp server.m_amd64 server_WIN64\
-    #       cp server-help.pd server_WIN64\ 
+    - name: Move files to server_WIN64
+      run: |
+          cp server.m_amd64 server_WIN64\
+          cp server-help.pd server_WIN64\ 
         
-    # - name: zip server_WIN64
-    #   run: 7z a server_WIN64.zip server_WIN64
+    - name: zip server_WIN64
+      run: 7z a server_WIN64.zip server_WIN64
 
-    # - name: Move test.pd to server_WIN64
-    #   run: cp test/test.pd server_WIN64/test.pd
+    - name: Move test.pd to server_WIN64
+      run: cp test/test.pd server_WIN64/test.pd
 
-    # - name: Run Test
-    #   run: cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui server_WIN64\test.pd
+    - name: Run Test
+      run: cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui server_WIN64\test.pd
 
-    # - name: Upload Object ZIP
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: server_WIN64
-    #     path: server_WIN64.zip
+    - name: Upload Object ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: server_WIN64
+        path: server_WIN64.zip
 
 # # ===============================================================================================
 # # ===============================================================================================
