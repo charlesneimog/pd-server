@@ -94,9 +94,6 @@ jobs:
           cp server.m_amd64 pd-server\
           cp server-help.pd pd-server\ 
           cp src/server.cc pd-server\
-
-    - name: Copy Public Folder to pd-server
-      run: cp -r public pd-server\public
         
     - name: upload pd-server
       uses: actions/upload-artifact@v3
@@ -141,7 +138,7 @@ jobs:
           mkdir pd-server/src
           cp src/server.cc pd-server/src
           mkdir pd-server/public
-          cp -r public pd-server/public
+          cp -r public/* pd-server/public
          
     - name: Upload Object
       uses: actions/upload-artifact@v3
