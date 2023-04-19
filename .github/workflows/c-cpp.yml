@@ -24,7 +24,8 @@ jobs:
 
     - name: Check where is ssl
       run: |
-        find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null
+        dirname $(find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null)
+
 
     # - name: Build server Object
     #   run: make 
