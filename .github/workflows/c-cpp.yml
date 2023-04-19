@@ -24,10 +24,7 @@ jobs:
 
     - name: Check where is ssl
       run: |
-        whereis openssl
-        find / -name err.h -path "*/openssl/*" 2>/dev/null
-    #     whereis libcrypto
-    #     whereis libssl
+        find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null
 
     # - name: Build server Object
     #   run: make 
