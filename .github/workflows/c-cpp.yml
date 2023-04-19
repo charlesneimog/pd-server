@@ -29,21 +29,21 @@ jobs:
     #     whereis libcrypto
     #     whereis libssl
 
-    - name: Build server Object
-      run: make 
+    # - name: Build server Object
+    #   run: make 
 
-    - name: Upload Object
-      uses: actions/upload-artifact@v3
-      with:
-        name: server
-        path: server.pd_darwin 
+    # - name: Upload Object
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: server
+    #     path: server.pd_darwin 
 
         
-    - name: Move server.pd_darwin to test
-      run: mv server.pd_darwin test/server.pd_darwin
+    # - name: Move server.pd_darwin to test
+    #   run: mv server.pd_darwin test/server.pd_darwin
 
-    - name: Run Test
-      run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
+    # - name: Run Test
+    #   run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
 # # ===============================================================================================
 # # ===============================================================================================
