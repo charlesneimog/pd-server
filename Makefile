@@ -32,10 +32,11 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
 else ifeq (Darwin,$(findstring Darwin,$(uname)))
   # compile with clang++
   PREFIX = /usr/local
-  OPENSSL_DIR = $(shell dirname $(dirname $(dirname $(find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null))))
-  OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include
-  cflags = -mmacosx-version-min=10.9  -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra  -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -DCPPHTTPLIB_ZLIB_SUPPORT 
-  ldlibs = -pthread -L $(OPENSSL_DIR)/lib -lssl 
+  OPENSSL_DIR := $(shell dirname $(dirname $(dirname $(shell find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null))))
+  OPENSSL_SUPPORT := -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include
+  cflags := -mmacosx-version-min=10.9  -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -I/usr/local/opt/openssl@1.1/include -DCPPHTTPLIB_ZLIB_SUPPORT 
+  ldlibs := -pthread -L$(OPENSSL_DIR)/lib -lssl 
+
 
 else
   $(error "Unknown system type: $(uname)")
