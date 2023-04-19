@@ -21,7 +21,7 @@ else ifeq (Darwin,$(findstring Darwin,$(uname)))
   # compile with clang++
   PREFIX = /usr/local
   OPENSSL_DIR := $(shell pkg-config --variable=prefix openssl || echo $(PREFIX))
-  OPENSSL_INCLUDE_DIR := $(shell find / -name err.h -path "*/openssl/*" 2>/dev/null | head -n 1)
+  OPENSSL_INCLUDE_DIR := $(shell dirname $(dirname $(find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null)))
   OPENSSL_LIB_DIR := $(shell pkg-config --variable=libdir openssl)
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_INCLUDE_DIR)
   cflags = -mmacosx-version-min=10.9 -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_INCLUDE_DIR) -I$(OPENSSL_INCLUDE_DIR)/openssl -DCPPHTTPLIB_ZLIB_SUPPORT

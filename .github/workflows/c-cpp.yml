@@ -22,26 +22,27 @@ jobs:
       run: | 
         brew install --cask pd 
 
-    - name: Check where is ssl
-      run: |
-        dirname $(find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null)
+    # - name: Check where is ssl
+    #   run: |
+        
 
 
-    # - name: Build server Object
-    #   run: make 
 
-    # - name: Upload Object
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: server
-    #     path: server.pd_darwin 
+    - name: Build server Object
+      run: make 
+
+    - name: Upload Object
+      uses: actions/upload-artifact@v3
+      with:
+        name: server
+        path: server.pd_darwin 
 
         
-    # - name: Move server.pd_darwin to test
-    #   run: mv server.pd_darwin test/server.pd_darwin
+    - name: Move server.pd_darwin to test
+      run: mv server.pd_darwin test/server.pd_darwin
 
-    # - name: Run Test
-    #   run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
+    - name: Run Test
+      run: /Applications/Pd-*.app/Contents/Resources/bin/pd -nogui test/test.pd
     
 # # ===============================================================================================
 # # ===============================================================================================
