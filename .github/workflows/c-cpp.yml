@@ -25,7 +25,7 @@ jobs:
     - name: Check where is ssl
       run: |
         whereis openssl
-        whereis openssl/err.h
+        find / -name err.h -path "*/openssl/*" 2>/dev/null
     #     whereis libcrypto
     #     whereis libssl
 
