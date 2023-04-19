@@ -22,25 +22,23 @@ jobs:
       run: | 
         brew install --cask pd 
 
-    # - name: Check where is include
-    #   run: |
-    #     dirname $(dirname $(find / -name err.h -path "*/openssl/*" -print -quit 2>/dev/null))
-        
-
-    # - name: Check where is lib
-    #   run: |
-    #     find / -name libssl.a -path "*/openssl/*" -print -quit 2>/dev/null
-
-
-
     - name: Build server Object
       run: make 
+
+    - name: Make zip file
+      run: | 
+        mkdir pd-server
+        mkdir pd-server/src
+        cp server.pd_darwin pd-server
+        cp server-help.pd pd-server
+        cp src/server.cc pd-server/src
+        zip -r server.zip server.pd_darwin server-help.pd src/server.cc public
 
     - name: Upload Object
       uses: actions/upload-artifact@v3
       with:
         name: server
-        path: server.pd_darwin 
+        path: server.zip
 
         
     - name: Move server.pd_darwin to test
