@@ -32,13 +32,12 @@ jobs:
         cp server.pd_darwin pd-server
         cp server-help.pd pd-server
         cp src/server.cc pd-server/src
-        zip -r server.zip server.pd_darwin server-help.pd src/server.cc public
 
     - name: Upload Object
       uses: actions/upload-artifact@v3
       with:
-        name: server
-        path: server.zip
+        name: pd-server
+        path: pd-server
 
         
     - name: Move server.pd_darwin to test
@@ -68,8 +67,8 @@ jobs:
           update: false
 
 
-    - name: Create server_WIN64
-      run: mkdir server_WIN64
+    - name: Create pd-server
+      run: mkdir pd-server
     
     - name: Install PureData
       run: choco install puredata --yes
@@ -87,32 +86,29 @@ jobs:
       run: |
           where libcrypto-3-x64.dll > libcrypto.txt
           where libssl-3-x64.dll > libssl.txt
-          cp $(cat libcrypto.txt) server_WIN64
-          cp $(cat libssl.txt) server_WIN64
+          cp $(cat libcrypto.txt) pd-server
+          cp $(cat libssl.txt) pd-server
     
-    - name: Move files to server_WIN64
+    - name: Move files to pd-server
       run: |
-          cp server.m_amd64 server_WIN64\
-          cp server-help.pd server_WIN64\ 
-          cp src/server.cc server_WIN64\
+          cp server.m_amd64 pd-server\
+          cp server-help.pd pd-server\ 
+          cp src/server.cc pd-server\
 
-    - name: Copy Public Folder to server_WIN64
-      run: cp -r public server_WIN64\public
+    - name: Copy Public Folder to pd-server
+      run: cp -r public pd-server\public
         
-    - name: zip server_WIN64
-      run: 7z a server_WIN64.zip server_WIN64
-
-    - name: Move test.pd to server_WIN64
-      run: cp test/test.pd server_WIN64/test.pd
-
-    - name: Run Test
-      run: cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui server_WIN64\test.pd
-
-    - name: Upload Object ZIP
+    - name: upload pd-server
       uses: actions/upload-artifact@v3
       with:
-        name: server_WIN64
-        path: server_WIN64.zip
+        name: pd-server
+        path: pd-server
+      
+    - name: Run Test
+      run: | 
+        cp test/test.pd pd-server/test.pd
+        cmd /c "C:\Program Files\Pd\bin\pd.exe" -nogui pd-server\test.pd
+
 
 # # # ===============================================================================================
 # # # ===============================================================================================
@@ -136,28 +132,29 @@ jobs:
     - name: Build
       run: make 
 
-    - name: Create server_Linux
-      run: mkdir server_Linux
+    - name: Create pd-server
+      run: mkdir pd-server
 
-    - name: Copy files to server_Linux
+    - name: Copy files to pd-server
       run: |
-          cp server.pd_linux server-help.pd server_Linux
-          mkdir server_Linux/src
-          cp src/server.cc server_Linux/src
-          mkdir server_Linux/public
-          cp -r public server_Linux/public
+          cp server.pd_linux server-help.pd pd-server
+          mkdir pd-server/src
+          cp src/server.cc pd-server/src
+          mkdir pd-server/public
+          cp -r public pd-server/public
          
-    - name: Zip server_Linux
-      run: zip -r server_Linux.zip server_Linux
-
-    - name: Move test.pd to server_Linux
-      run: cp test/test.pd server_Linux/test.pd
-
     - name: Upload Object
       uses: actions/upload-artifact@v3
       with:
-        name: server_Linux
-        path: server_Linux.zip
+        name: pd-server
+        path: pd-server
+    
+    
+    - name: Zip pd-server
+      run: zip -r pd-server.zip pd-server
+
+    - name: Move test.pd to pd-server
+      run: cp test/test.pd pd-server/test.pd
 
     - name: Run Test
-      run: pd -nogui server_Linux/test.pd
+      run: pd -nogui pd-server/test.pd
