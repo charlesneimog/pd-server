@@ -25,8 +25,9 @@ jobs:
     - name: Check where is ssl
       run: |
         whereis openssl
-        whereis libcrypto
-        whereis libssl
+        whereis err.h
+    #     whereis libcrypto
+    #     whereis libssl
 
     - name: Build server Object
       run: make 
