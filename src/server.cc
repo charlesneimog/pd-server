@@ -38,6 +38,7 @@ int object_created = 0;
 typedef struct _server { // It seems that all the objects are some kind of class.
     t_object            x_obj; // convensao no puredata source code
 	t_outlet 			*outlet; // outlet
+	t_outlet            *audio; // outlet for audio
     t_canvas            *x_canvas; // pointer to the canvas
 	t_int             	port; // port
 	t_int  				running; // running
@@ -48,7 +49,7 @@ typedef struct _server { // It seems that all the objects are some kind of class
 
 // ========================================================
 
-static void *server_new(t_floatarg f) {
+static void *server_new(t_symbol *s, int argc, t_atom *argv);
 	if (server_object == 0) {
 		post("");
 		post("[server] Server object is an interface to the httplib library by Yuji Hirose");
@@ -66,8 +67,19 @@ static void *server_new(t_floatarg f) {
 	x->debug = 0;
 	x->port = 8080;
 	if (f != 0) {
-		x->port = (int)f;
-		post("[server] Port set to %d", x->port);
+		for (int i = 0; i < argc; i++) {
+			if (argv[i].a_type == A_FLOAT) {
+				x->port = (int)argv[i].a_w.w_float;
+				post("[server] Port set to %d", x->port);
+			}
+			else if (argv[i].a_type == A_SYMBOL) {
+				// check if symbol is equal "-audio"
+				if (strcmp(argv[i].a_w.w_symbol->s_name, "-audio") == 0) {
+					post("[server] Audio activated");
+					x->audio = outlet_new(&x->x_obj, &s_signal);
+				}
+			}
+		}
 	}
 
 	object_created += 1;
@@ -412,7 +424,7 @@ void server_setup(void) {
 							(t_method)server_free, 
 							sizeof(t_server), 
 							CLASS_DEFAULT, 
-							A_FLOAT, 
+							A_GIMME, 
 							0);
   	
 	// METHODS
