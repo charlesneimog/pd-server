@@ -20,13 +20,13 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
 else ifeq (Darwin,$(findstring Darwin,$(uname)))
   # compile with clang++
   PREFIX = /usr/local
-  OPENSSL_DIR := $(shell pkg-config --variable=prefix openssl || echo $(PREFIX))
-  OPENSSL_INCLUDE_DIR := $(shell pkg-config --cflags-only-I openssl | sed 's/^-I//')
-  OPENSSL_LIB_DIR := $(shell pkg-config --variable=libdir openssl)
+  OPENSSL_DIR := $(shell whereis openssl | awk '{print $$2}' | sed 's/\/bin\/openssl//')
+  OPENSSL_INCLUDE_DIR := $(shell find $(OPENSSL_DIR) -name "openssl" -type d -maxdepth 1 -exec echo -n {} \;/include)
+  OPENSSL_LIB_DIR := $(shell find $(OPENSSL_DIR) -name "libssl" -type d -maxdepth 2 -exec echo -n {} \;)
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_INCLUDE_DIR)
-  #cflags = -mmacosx-version-min=10.9 -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_INCLUDE_DIR) -DCPPHTTPLIB_ZLIB_SUPPORT 
   cflags = -mmacosx-version-min=10.9 -std=c++11 $(OPENSSL_SUPPORT) -O2 -stdlib=libc++ -I.. -Wall -Wextra -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_INCLUDE_DIR) -I$(OPENSSL_INCLUDE_DIR)/openssl -DCPPHTTPLIB_ZLIB_SUPPORT
   ldlibs = -pthread -L$(OPENSSL_LIB_DIR) -lssl
+
 
 
 else
