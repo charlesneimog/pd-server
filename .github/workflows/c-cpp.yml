@@ -24,9 +24,9 @@ jobs:
 
     - name: Check where is ssl
       run: |
-        where openssl
-        where libcrypto
-        where libssl
+        whereis openssl
+        whereis libcrypto
+        whereis libssl
 
     - name: Build server Object
       run: make 
