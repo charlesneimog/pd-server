@@ -19,7 +19,8 @@ jobs:
         fetch-depth: 0
 
     - name: Install PureData 
-      run: brew install --cask pd 
+      run: | 
+        brew install --cask pd 
 
 
     - name: Build server Object
