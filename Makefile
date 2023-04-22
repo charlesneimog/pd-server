@@ -13,7 +13,7 @@ else ifeq (Linux,$(findstring Linux,$(uname)))
   PREFIX = /usr/local
   OPENSSL_DIR = $(PREFIX)/opt/openssl@1.
   OPENSSL_SUPPORT = -DCPPHTTPLIB_OPENSSL_SUPPORT -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib 
-  cflags = $(OPENSSL_SUPPORT) $(CXXFLAGS) -std=c++11 
+  cflags = -I ./src/websocketpp/ $(OPENSSL_SUPPORT) $(CXXFLAGS) -std=c++17 
   ldlibs = -lssl -pthread 
 
 else ifeq (Darwin,$(findstring Darwin,$(uname)))

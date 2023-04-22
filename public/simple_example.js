@@ -1,3 +1,36 @@
+// Client-side code
+
+// Create an RTCPeerConnection
+var pc = new RTCPeerConnection();
+
+// Add an audio track to the connection
+navigator.mediaDevices.getUserMedia({audio: true})
+  .then(function(stream) {
+    pc.addTrack(stream.getAudioTracks()[0], stream);
+  });
+
+// Set the remote IP and port
+var remoteIP = '192.168.15.8';
+var remotePort = 1997;
+var remoteCandidate = 'candidate:1 1 UDP 2013266431 ' + remoteIP + ' ' + remotePort + ' typ host';
+pc.addIceCandidate(new RTCIceCandidate({ candidate: remoteCandidate }));
+
+// Create an offer and set the local IP and port
+pc.createOffer().then(function(offer) {
+  var localCandidate = offer.sdp.match(/a=candidate:1 \d+ UDP \d+ \d+.\d+.\d+.\d+ \d+ typ host/)[0];
+  pc.setLocalDescription(offer);
+});
+
+var candidate = new RTCIceCandidate({
+  candidate: 'candidate:1 1 UDP 12345678 ' + remoteIP + ' ' + remotePort + ' typ host',
+  sdpMLineIndex: 0
+});
+
+pc.addIceCandidate(candidate);
+
+
+
+
 // =======================================
 // load javascript file
 // =======================================
