@@ -94,6 +94,7 @@ typedef struct _server { // It seems that all the objects are some kind of class
 	t_outlet 			*outlet; // outlet
 	t_outlet            *out_audio; // outlet for audio
     t_canvas            *x_canvas; // pointer to the canvas
+    t_symbol            *folderOfServer; // folder of the server
     t_float             audio; // audio
 	t_int             	port; // port
 	t_int  				running; // running
@@ -133,6 +134,7 @@ static void *server_new(t_symbol *s, int argc, t_atom *argv){
     x->outlet = outlet_new(&x->x_obj, 0);
 	x->debug = 0;
 	x->port = 8080;
+    x->folderOfServer = gensym("/public");
 	if (argc != 0) {
 		for (int i = 0; i < argc; i++) {
 			if (argv[i].a_type == A_FLOAT) {
@@ -325,9 +327,15 @@ static std::string get_ip_address(t_server *x) {
 
 // ========================================================
 static void set_port(t_server *x, t_floatarg f) {
-	// convert to int
 	x->port = (int)f;
 	post("[server] Port set to %d", x->port);
+	return;
+}
+
+// ========================================================
+static void set_folder(t_server *x, t_symbol *s) {
+    x->folderOfServer = s;
+    post("[server] Folder set to %s", x->folderOfServer->s_name);
 	return;
 }
 
@@ -460,7 +468,7 @@ static void server_https(t_server *x) {
 	// save the server in the GLOBAL_SERVER variable
 	GLOBAL_SERVER_HTTPS = &svr;
 
-	public_dir += "/public";
+	public_dir += x->folderOfServer->s_name;
 	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
 	svr.set_error_handler([](const Request & /*req*/, Response &res) {
 		char buf[BUFSIZ];
@@ -510,7 +518,7 @@ static void server_http(t_server *x) {
 	// save the server in the GLOBAL_SERVER variable
 	GLOBAL_SERVER_HTTP = &svr;
 
-	public_dir += "/public";
+    public_dir += x->folderOfServer->s_name;
 	svr.set_mount_point("/", public_dir.c_str()); // all must be inside a public folder
 	svr.set_error_handler([](const Request & /*req*/, Response &res) {
 		char buf[BUFSIZ];
@@ -622,6 +630,7 @@ void server_setup(void) {
 	class_addmethod(server_class, (t_method)debug, gensym("debug"), A_FLOAT, 0);
 	class_addmethod(server_class, (t_method)set_post, gensym("post"), A_FLOAT, 0);
     class_addmethod(server_class, (t_method)get_ip, gensym("getip"), A_NULL, 0);
+    class_addmethod(server_class, (t_method)set_folder, gensym("folder"), A_SYMBOL, 0);
     // class_addmethod(server_class, (t_method)receiveaudio, gensym("audio"), A_FLOAT, 0);
 
     // AUDIO
