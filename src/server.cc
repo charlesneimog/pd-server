@@ -121,7 +121,7 @@ static void *server_new(t_symbol *s, int argc, t_atom *argv){
 		post("");
 		post("[server] Server object is an interface to the httplib library by Yuji Hirose");
 		post("[server] The interface for PureData is developed by Charles K. Neimog (2022)");
-		post("[server] version 0.1.1");
+		post("[server] version 0.1.3");
 		post("");
 	}
 	t_server *x = (t_server *)pd_new(server_class);
