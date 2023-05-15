@@ -10,7 +10,7 @@
 #X text 7 30 REQUIRES MINGW64;
 #X restore 328 140 pd SSL_WINDOWS;
 #N canvas 0 0 1282 175 SSL_LINUX 0;
-#X text 18 13 Run openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem from terminal., f 85;
+#X text 18 13 Run 'openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem from terminal., f 85;
 #X restore 328 166 pd SSL_LINUX;
 #N canvas 142 242 1332 149 SSL_MAC 0;
 #X text 17 14 I BELIEVE that is same that Linux 'openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 365 -out cert.pem'., f 85;
